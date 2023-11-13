@@ -68,7 +68,7 @@ async function digestMessage(key, context)
 {
     const combinedKey = key + context;
     var hashBuffer = new TextEncoder().encode(combinedKey);
-    for(var i = 0; i < 0x4000; ++i)
+    for(var i = 0; i < 0xFFFF; ++i)
     {
 		hashBuffer = await crypto.subtle.digest('SHA-256', hashBuffer);
     }
