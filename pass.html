@@ -13,8 +13,7 @@
       html { font-size: 10px; }
       hr { margin-top: 20px; margin-bottom: 20px; border-color: rgb(248, 245, 240) currentcolor currentcolor; border-style: solid none none; border-width: 1px 0px 0px; border-image: none 100% / 1 / 0 stretch; }
       h3 { font-size: 24px; }
-      h4 { font-size: 18px; height: 32px; color: #00000000; }
-      h4:hover { color: rgb(62, 63, 58); }
+      h4 { font-size: 18px; height: 32px; }
       button, input, optgroup, select, textarea { color: inherit; font: inherit; margin: 0px; }
       button { overflow: visible; }
       button, select { text-transform: none; }
@@ -73,18 +72,33 @@
             <label class="unselectable" for="exampleInputPassword1">Context</label>
             <input type="text" class="form-control" id="context">
           </div>
+          <button id="showResult" class="btn" onclick="updatePassword();" style="width: 100%; float: center;">Calculate password</button>
           <hr>
-          <button id="copyResult" class="btn" onclick="copyPassword();" style="width: 40%;">Copy to clipboard</button>
-          <button id="showResult" class="btn" onclick="showPassword();" style="width: 40%; float: right;">Show result</button>
-          <hr>
-          <h4 id="result" class="text-center" style="font-family:'Lucida Console', monospace;" onclick="window.getSelection().selectAllChildren(this)">&nbsp;</h4>
+          <h4 id="resultBox" class="text-center" style="font-family:'Lucida Console', monospace;">
+            <span id="result" style="cursor: pointer; min-width: 192px; display:inline-block;" draggable="true" ondragstart="drag(event)" onclick="toggleText()" hidden></span>
+            <span id="copyToClipboard" style="margin-left: 32px; font-size: 24px; cursor: pointer;" draggable="true" ondblclick="copyPassword()" hidden>📋</span>
+          </h4>
           <hr>
         </div>
       </div>
     </div>
     <script>
+
+let isIcon = true;
+let resultPassword = "";
+function drag(event) {
+  event.dataTransfer.setData("text/plain", resultPassword);
+}
+
+function toggleText() {
+  const copyIcon = document.getElementById('copyToClipboard');
+  copyIcon.hidden = false;
+
+  const dragIcon = document.getElementById('result');
+  isIcon = !isIcon;
+  dragIcon.innerText = isIcon ? 'PASSWORD' : resultPassword;
+}
 	    
-var passHidden = true;
 async function digestMessage(key, context) {
   const combinedKey = key + context;
   var hashBuffer = new TextEncoder().encode(combinedKey);
@@ -95,53 +109,29 @@ async function digestMessage(key, context) {
     new Uint8Array(hashBuffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
   );
   var result = base64.slice(0, 15);
+  resultPassword = result;
   return result;
-}
-
-function showPassword() {
-  passHidden = !passHidden;
-  if (passHidden == false) {
-    document.getElementById('showResult').innerHTML = "Hide result";
-    updatePassword();
-  } else {
-    document.getElementById('showResult').innerHTML = "Show result";
-    document.getElementById('result').innerHTML = '&nbsp;';
-  }
 }
 
 function updatePassword() {
   function successCallback(result) {
-    if (passHidden) {
-      document.getElementById('result').innerHTML = '&nbsp;';
-    } else {
-      document.getElementById('result').innerHTML = "<span class='result-test'>" + result + "</span>";
-    }
+    isIcon = false;
+    toggleText();
   }
 
   function failureCallback(error) {
     document.getElementById('result').innerHTML = 'ERROR: ' + error;
   }
 
+  document.getElementById('result').hidden = false;
+  document.getElementById('copyToClipboard').hidden = true;
   document.getElementById('result').innerHTML = "<div class='lds-dual-ring'></div>";
   const promise = digestMessage(document.getElementById('key').value, document.getElementById('context').value);
   const promise2 = promise.then(successCallback, failureCallback);
 }
 
 function copyPassword() {
-  function successCallback(result) {
-    (async () => {
-      document.getElementById('result').innerHTML = "Copied to clipboard!";
-      await navigator.clipboard.writeText(result);
-    })();
-  }
-
-  function failureCallback(error) {
-    console.log(error);
-  }
-
-  document.getElementById('result').innerHTML = "<div class='lds-dual-ring'></div>";
-  const promise = digestMessage(document.getElementById('key').value, document.getElementById('context').value);
-  const promise2 = promise.then(successCallback, failureCallback);
+  navigator.clipboard.writeText(resultPassword);
 }
 
 function toggleMasterKeyVisibility() {
@@ -155,6 +145,7 @@ function toggleMasterKeyVisibility() {
 
     </script>
   
+
 
 
 </body></html>
