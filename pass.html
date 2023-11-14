@@ -65,7 +65,7 @@
           <h3>Password Manager</h3>
           <hr>
           <div class="form-group">
-            <label class="unselectable" for="exampleInputEmail1" onclick="toggleMasterKeyVisibility()">Master Key</label>
+            <label class="unselectable" for="exampleInputEmail1" onmousedown="revealMasterKey(true)" onmouseup="revealMasterKey(false)" onmouseout="revealMasterKey(false)">Master Key</label>
             <input type="password" class="form-control" id="key">
           </div>
           <div class="form-group">
@@ -75,15 +75,15 @@
           <button id="showResult" class="btn" onclick="updatePassword();" style="width: 100%; float: center;">Calculate password</button>
           <hr>
           <h4 id="resultBox" class="text-center" style="font-family:'Lucida Console', monospace;">
-            <span id="result" style="cursor: pointer; min-width: 192px; display:inline-block;" draggable="true" ondragstart="drag(event)" onclick="toggleText()" hidden></span>
-            <span id="copyToClipboard" style="margin-left: 32px; font-size: 24px; cursor: pointer;" draggable="true" onclick="copyPassword()" hidden>📋</span>
+            <span id="result" style="cursor: pointer; min-width: 192px; display:inline-block;" draggable="true" ondragstart="drag(event)" onclick="toggleText()" hidden=""></span>
+            <span id="copyToClipboard" style="margin-left: 32px; font-size: 24px; cursor: pointer;" draggable="true" onclick="copyPassword()" hidden="">📋</span>
           </h4>
           <hr>
         </div>
       </div>
     </div>
-    <script>
 
+    <script>
 let isIcon = true;
 let resultPassword = "";
 function drag(event) {
@@ -134,9 +134,9 @@ function copyPassword() {
   navigator.clipboard.writeText(resultPassword);
 }
 
-function toggleMasterKeyVisibility() {
+function revealMasterKey(visible) {
   var x = document.getElementById('key');
-  if (x.type === "password") {
+  if (visible) {
     x.type = "text";
   } else {
     x.type = "password";
@@ -144,8 +144,4 @@ function toggleMasterKeyVisibility() {
 }
 
     </script>
-  
-
-
-
 </body></html>
