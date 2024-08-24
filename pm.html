@@ -233,7 +233,7 @@
           }
           hashBuffer = new Uint8Array(hashBuffer);
         
-          var charMap = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ23456789!#$%&()*+,-./:;<=>?@[]^_{}~';
+          var charMap = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
           var base = charMap.length;
         
           let integerValue = 0n;
@@ -245,7 +245,7 @@
           while (integerValue > 0n) {
               const remainder = integerValue % BigInt(base);
               integerValue = integerValue / BigInt(base);
-              result = result + charMap[Number(remainder)];
+              result = charMap[Number(remainder)] + result;
           }
           result = result.slice(0, 22);
           resultPassword = result;
